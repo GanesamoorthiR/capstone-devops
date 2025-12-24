@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+Metadata:
+  name:  capstone-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLables:
+      app: capstone
+  template:
+    Metadata:
+      name: mypod
+      lables:
+        app: capstone
+    spec:
+      containers: 
+        - name: capstone-container
+          image: ganesamoorthir/capstone-website:v1
+          ports:
+            - containerPort: 8080
