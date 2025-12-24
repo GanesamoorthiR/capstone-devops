@@ -1,616 +1,601 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>FashionHub | Dress Shopping</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inventory Management System</title>
+  <style>
+    /* ==========================
+       Reset & base
+       ========================== */
+    :root{
+      --bg: #0f1724;
+      --card: #0b1220;
+      --accent: #10b981;
+      --muted: #94a3b8;
+      --danger: #ef4444;
+      --glass: rgba(255,255,255,0.04);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(16,185,129,0.07), transparent),
+                  radial-gradient(1000px 500px at 90% 90%, rgba(59,130,246,0.04), transparent),
+                  var(--bg);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:28px;
+    }
 
-<style>
-/* ================= GLOBAL ================= */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
-}
+    /* ==========================
+       Layout
+       ========================== */
+    .container{
+      max-width:1200px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns: 420px 1fr;
+      gap:24px;
+      align-items:start;
+    }
 
-body {
-    background: #f5f5f5;
-    color: #333;
-}
+    header{grid-column:1/-1; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
+    header h1{font-size:20px; margin:0}
+    header .subtitle{color:var(--muted); font-size:13px}
 
-/* ================= HEADER ================= */
-header {
-    background: linear-gradient(120deg, #ff416c, #ff4b2b);
-    padding: 20px 60px;
-    color: white;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    animation: slideDown 1s ease;
-}
+    /* form card */
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:14px; padding:18px; box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .card h2{margin:0 0 12px 0}
 
-@keyframes slideDown {
-    from { transform: translateY(-100px); }
-    to { transform: translateY(0); }
-}
+    form .row{display:flex; gap:8px}
+    label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px}
+    input[type="text"], input[type="number"], select, textarea{
+      width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.04);
+      background:transparent; color:inherit; outline:none; font-size:14px;
+    }
+    textarea{min-height:80px}
+    .small{font-size:12px; color:var(--muted)}
 
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+    .btn{
+      display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:10px; cursor:pointer;
+      border:0; background:linear-gradient(90deg,var(--accent), #06b6d4); color: #021017; font-weight:600;
+      box-shadow: 0 6px 18px rgba(16,185,129,0.14);
+    }
+    .btn.ghost{background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.03)}
+    .btn.danger{background:linear-gradient(90deg,var(--danger), #f97316); color:#fff}
 
-nav h1 {
-    font-size: 28px;
-    letter-spacing: 2px;
-}
+    /* image preview */
+    .img-uploader{display:flex; gap:8px; align-items:center}
+    .thumb{width:86px; height:86px; border-radius:10px; overflow:hidden; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); display:flex; align-items:center; justify-content:center; border:1px dashed rgba(255,255,255,0.03)}
+    .thumb img{width:100%; height:100%; object-fit:cover}
 
-nav ul {
-    list-style: none;
-    display: flex;
-    gap: 25px;
-}
+    /* main area */
+    .toolbar{display:flex; gap:12px; align-items:center; margin-bottom:12px}
+    .search{flex:1; display:flex; align-items:center; gap:8px}
+    .search input{padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); background:transparent; width:100%}
+    .filters{display:flex; gap:8px}
 
-nav ul li {
-    cursor: pointer;
-    transition: transform 0.3s;
-}
+    /* products grid */
+    .grid{display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:14px}
+    .product{
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+      padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.03); position:relative; overflow:hidden;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .product:hover{transform:translateY(-6px); box-shadow:0 24px 40px rgba(2,6,23,0.6)}
+    .product .p-img{width:100%; height:130px; border-radius:8px; overflow:hidden; margin-bottom:8px}
+    .product .p-img img{width:100%; height:100%; object-fit:cover}
+    .p-title{display:flex; justify-content:space-between; align-items:center}
+    .p-title h3{margin:0; font-size:15px}
+    .p-meta{color:var(--muted); font-size:13px}
 
-nav ul li:hover {
-    transform: scale(1.1);
-}
+    .badge{display:inline-block; padding:6px 8px; border-radius:8px; font-weight:700; font-size:12px}
+    .badge.low{background:rgba(239,68,68,0.12); color:var(--danger);}
+    .badge.ok{background:rgba(16,185,129,0.08); color:var(--accent)}
 
-/* ================= HERO ================= */
-.hero {
-    height: 90vh;
-    background: url("https://images.unsplash.com/photo-1521335629791-ce4aec67dd47?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
+    .actions{display:flex; gap:8px; margin-top:10px}
+    .actions button{flex:1}
 
-.hero::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-}
+    /* empty state */
+    .empty{padding:40px; text-align:center; color:var(--muted); border-radius:10px}
 
-.hero-content {
-    position: relative;
-    text-align: center;
-    color: white;
-    animation: fadeIn 2s ease;
-}
+    /* little animation */
+    .sparkle{position:absolute; inset: -30% -30% auto auto; width:160px; height:160px; pointer-events:none; opacity:0.06}
+    .sparkle svg{width:100%; height:100%}
+    @keyframes floaty{0%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(6deg)}100%{transform:translateY(0) rotate(0)}}
+    .float{animation:floaty 6s ease-in-out infinite}
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(40px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+    /* responsive */
+    @media (max-width:980px){
+      .container{grid-template-columns:1fr; padding:12px}
+      header{flex-direction:column; align-items:flex-start; gap:10px}
+    }
 
-.hero-content h2 {
-    font-size: 48px;
-    margin-bottom: 20px;
-}
+    /* utilities */
+    .muted{color:var(--muted)}
+    .flex{display:flex; gap:8px; align-items:center}
 
-.hero-content p {
-    font-size: 20px;
-    margin-bottom: 30px;
-}
+    /* big footer */
+    footer{grid-column:1/-1; margin-top:18px; color:var(--muted); font-size:13px}
 
-.hero-content button {
-    padding: 15px 35px;
-    border: none;
-    background: #ff416c;
-    color: white;
-    border-radius: 30px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: transform 0.3s, background 0.3s;
-}
+    /* subtle loading pulse */
+    .pulse{animation:pulse 1.6s infinite}
+    @keyframes pulse{0%{opacity:1}50%{opacity:0.6}100%{opacity:1}}
 
-.hero-content button:hover {
-    background: #e63950;
-    transform: scale(1.05);
-}
+    /* table view overlay */
+    .table-view{margin-top:12px}
+    table{width:100%; border-collapse:collapse}
+    th,td{padding:8px 10px; text-align:left; border-bottom:1px dashed rgba(255,255,255,0.03)}
+    th{font-size:13px; color:var(--muted)}
 
-/* ================= PRODUCTS ================= */
-section {
-    padding: 80px 60px;
-}
-
-.section-title {
-    text-align: center;
-    font-size: 36px;
-    margin-bottom: 50px;
-}
-
-.products {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 40px;
-}
-
-.product {
-    background: white;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    transition: transform 0.4s;
-}
-
-.product:hover {
-    transform: translateY(-15px);
-}
-
-.product img {
-    width: 100%;
-    height: 320px;
-    object-fit: cover;
-}
-
-.product-info {
-    padding: 20px;
-    text-align: center;
-}
-
-.product-info h3 {
-    font-size: 20px;
-    margin-bottom: 10px;
-}
-
-.product-info p {
-    color: #777;
-    margin-bottom: 15px;
-}
-
-.price {
-    font-size: 18px;
-    color: #ff416c;
-    margin-bottom: 15px;
-}
-
-.product-info button {
-    padding: 10px 25px;
-    border: none;
-    background: #ff416c;
-    color: white;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.product-info button:hover {
-    background: #e63950;
-}
-
-/* ================= CART ================= */
-.cart {
-    position: fixed;
-    right: 30px;
-    bottom: 30px;
-    background: #ff416c;
-    color: white;
-    padding: 15px 25px;
-    border-radius: 40px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-    0%,100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-}
-
-/* ================= FOOTER ================= */
-footer {
-    background: #222;
-    color: #ccc;
-    text-align: center;
-    padding: 30px;
-}
-</style>
+  </style>
 </head>
-
 <body>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>FashionHub | Dress Shopping</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <div class="container">
+    <header>
+      <div>
+        <h1>Inventory Management system</h1>
+        <div class="subtitle">Add, edit, delete items. Images stored locally (base64). Works offline.</div>
+      </div>
+      <div class="flex">
+        <button id="exportBtn" class="btn ghost">Export JSON</button>
+        <button id="importBtn" class="btn ghost">Import JSON</button>
+      </div>
+    </header>
 
-<style>
-/* ================= GLOBAL ================= */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-body {
-    background: #f5f5f5;
-    color: #333;
-}
-
-/* ================= HEADER ================= */
-header {
-    background: linear-gradient(120deg, #ff416c, #ff4b2b);
-    padding: 20px 60px;
-    color: white;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    animation: slideDown 1s ease;
-}
-
-@keyframes slideDown {
-    from { transform: translateY(-100px); }
-    to { transform: translateY(0); }
-}
-
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-nav h1 {
-    font-size: 28px;
-    letter-spacing: 2px;
-}
-
-nav ul {
-    list-style: none;
-    display: flex;
-    gap: 25px;
-}
-
-nav ul li {
-    cursor: pointer;
-    transition: transform 0.3s;
-}
-
-nav ul li:hover {
-    transform: scale(1.1);
-}
-
-/* ================= HERO ================= */
-.hero {
-    height: 90vh;
-    background: url("https://images.unsplash.com/photo-1521335629791-ce4aec67dd47?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-
-.hero::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-}
-
-.hero-content {
-    position: relative;
-    text-align: center;
-    color: white;
-    animation: fadeIn 2s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(40px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.hero-content h2 {
-    font-size: 48px;
-    margin-bottom: 20px;
-}
-
-.hero-content p {
-    font-size: 20px;
-    margin-bottom: 30px;
-}
-
-.hero-content button {
-    padding: 15px 35px;
-    border: none;
-    background: #ff416c;
-    color: white;
-    border-radius: 30px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: transform 0.3s, background 0.3s;
-}
-
-.hero-content button:hover {
-    background: #e63950;
-    transform: scale(1.05);
-}
-
-/* ================= PRODUCTS ================= */
-section {
-    padding: 80px 60px;
-}
-
-.section-title {
-    text-align: center;
-    font-size: 36px;
-    margin-bottom: 50px;
-}
-
-.products {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 40px;
-}
-
-.product {
-    background: white;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    transition: transform 0.4s;
-}
-
-.product:hover {
-    transform: translateY(-15px);
-}
-
-.product img {
-    width: 100%;
-    height: 320px;
-    object-fit: cover;
-}
-
-.product-info {
-    padding: 20px;
-    text-align: center;
-}
-
-.product-info h3 {
-    font-size: 20px;
-    margin-bottom: 10px;
-}
-
-.product-info p {
-    color: #777;
-    margin-bottom: 15px;
-}
-
-.price {
-    font-size: 18px;
-    color: #ff416c;
-    margin-bottom: 15px;
-}
-
-.product-info button {
-    padding: 10px 25px;
-    border: none;
-    background: #ff416c;
-    color: white;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.product-info button:hover {
-    background: #e63950;
-}
-
-/* ================= CART ================= */
-.cart {
-    position: fixed;
-    right: 30px;
-    bottom: 30px;
-    background: #ff416c;
-    color: white;
-    padding: 15px 25px;
-    border-radius: 40px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-    0%,100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-}
-
-/* ================= FOOTER ================= */
-footer {
-    background: #222;
-    color: #ccc;
-    text-align: center;
-    padding: 30px;
-}
-</style>
-</head>
-
-<body>
-
-<header>
-<nav>
-    <h1>FashionHub</h1>
-    <ul>
-        <li>Home</li>
-        <li>Shop</li>
-        <li>New Arrivals</li>
-        <li>Contact</li>
-    </ul>
-</nav>
-</header>
-
-<section class="hero">
-<div class="hero-content">
-    <h2>Style That Defines You</h2>
-    <p>Discover elegant dresses for every moment</p>
-    <button onclick="scrollToShop()">Shop Now</button>
-</div>
-</section>
-
-<section id="shop">
-<h2 class="section-title">Trending Dresses</h2>
-
-<div class="products">
-    <div class="product">
-        <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80">
-        <div class="product-info">
-            <h3>Floral Summer Dress</h3>
-            <p>Light & breezy fashion</p>
-            <div class="price">₹1,999</div>
-            <button onclick="addToCart()">Add to Cart</button>
+    <!-- LEFT: Add / Edit Form -->
+    <div class="card" id="formCard">
+      <h2 id="formTitle">Add New Item</h2>
+      <form id="itemForm">
+        <div style="display:flex; gap:10px; margin-bottom:10px">
+          <div style="flex:1">
+            <label for="name">Product name</label>
+            <input id="name" name="name" type="text" placeholder="e.g. Electric Drill" required />
+          </div>
+          <div style="width:120px">
+            <label for="sku">SKU</label>
+            <input id="sku" name="sku" type="text" placeholder="SKU001" />
+          </div>
         </div>
+
+        <div class="row" style="margin-bottom:10px">
+          <div style="flex:1">
+            <label for="vendor">Vendor</label>
+            <input id="vendor" name="vendor" type="text" placeholder="Vendor name" />
+          </div>
+          <div style="width:140px">
+            <label for="qty">Quantity</label>
+            <input id="qty" name="qty" type="number" min="0" value="1" required />
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-bottom:10px">
+          <div style="flex:1">
+            <label for="price">Price (₹)</label>
+            <input id="price" name="price" type="number" min="0" step="0.01" value="0.00" />
+          </div>
+          <div style="width:140px">
+            <label for="reorder">Reorder Level</label>
+            <input id="reorder" name="reorder" type="number" min="0" value="5" />
+          </div>
+        </div>
+
+        <div style="margin-bottom:10px">
+          <label for="desc">Description <span class="small">(optional)</span></label>
+          <textarea id="desc" name="desc" placeholder="Short product description..."></textarea>
+        </div>
+
+        <div style="margin-bottom:12px">
+          <label>Image</label>
+          <div class="img-uploader">
+            <div class="thumb" id="thumbPreview" title="Image preview">
+              <!-- default SVG placeholder -->
+              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="3" width="20" height="14" rx="2" fill="rgba(255,255,255,0.02)" />
+                <circle cx="8.5" cy="9.5" r="1.8" fill="rgba(255,255,255,0.06)" />
+                <path d="M21 21H3" stroke="rgba(255,255,255,0.03)" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div style="flex:1">
+              <input id="imgInput" accept="image/*" type="file" />
+              <div class="small muted" style="margin-top:6px">Upload an image or leave blank to use placeholder.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:6px">
+          <button type="submit" class="btn" id="saveBtn">Add Item</button>
+          <button type="button" class="btn ghost" id="clearBtn">Reset</button>
+        </div>
+
+        <input type="hidden" id="editingId" />
+      </form>
+
+      <div style="margin-top:12px; font-size:13px; color:var(--muted)">
+        Tip: Images are stored as base64 in your browser's localStorage. To backup, use export/import.
+      </div>
+
+      <!-- decorative sparkle -->
+      <div class="sparkle float" aria-hidden="true">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g opacity=".9" transform="translate(20,10)">
+            <path d="M50 2 L58 36 L94 36 L64 56 L74 90 L50 68 L26 90 L36 56 L6 36 L42 36 Z" fill="rgba(255,255,255,0.02)"/>
+          </g>
+        </svg>
+      </div>
     </div>
 
-    <div class="product">
-        <img src="https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&w=800&q=80">
-        <div class="product-info">
-            <h3>Evening Party Gown</h3>
-            <p>Elegant and classy</p>
-            <div class="price">₹3,499</div>
-            <button onclick="addToCart()">Add to Cart</button>
+    <!-- RIGHT: List / Controls -->
+    <div>
+      <div class="card">
+        <div class="toolbar">
+          <div class="search">
+            <input id="searchInput" placeholder="Search by name, vendor, SKU..." />
+            <button id="addSampleBtn" class="btn ghost">+ Sample</button>
+          </div>
+          <div class="filters">
+            <select id="sortSelect">
+              <option value="new">Sort: Newest</option>
+              <option value="name">Name A→Z</option>
+              <option value="qty_desc">Qty ↓</option>
+              <option value="qty_asc">Qty ↑</option>
+            </select>
+            <button id="tableToggle" class="btn ghost">Table</button>
+          </div>
         </div>
+
+        <div id="productsArea">
+          <div class="grid" id="grid"></div>
+
+          <div class="table-view" id="tableView" style="display:none; margin-top:14px">
+            <table>
+              <thead>
+                <tr><th>Image</th><th>Name</th><th>SKU</th><th>Vendor</th><th>Qty</th><th>Price</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+
+          <div id="emptyState" class="empty" style="display:none">
+            <div style="font-size:20px; font-weight:700">No items yet</div>
+            <div style="margin-top:8px">Add your first product using the form on the left — or click <strong>+ Sample</strong>.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card">
+        <h3 style="margin:0 0 12px 0">Quick Stats</h3>
+        <div style="display:flex; gap:12px; align-items:center">
+          <div style="flex:1">
+            <div style="font-size:28px; font-weight:800" id="statCount">0</div>
+            <div class="small muted">Total items</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:28px; font-weight:800" id="statLow">0</div>
+            <div class="small muted">Low stock</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:28px; font-weight:800" id="statValue">₹0</div>
+            <div class="small muted">Inventory value</div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <div class="product">
-        <img src="https://images.unsplash.com/photo-1591369822096-ffd140ec948f?auto=format&fit=crop&w=800&q=80">
-        <div class="product-info">
-            <h3>Office Wear Kurti</h3>
-            <p>Comfort meets professionalism</p>
-            <div class="price">₹1,599</div>
-            <button onclick="addToCart()">Add to Cart</button>
-        </div>
-    </div>
+    <footer>
+      Built with ❤️ — Save this file as <code>inventory_system.html</code> and open it in your browser. Works offline.
+    </footer>
+  </div>
 
-    <div class="product">
-        <img src="https://images.unsplash.com/photo-1520975922284-9fdfd6a62a21?auto=format&fit=crop&w=800&q=80">
-        <div class="product-info">
-            <h3>Designer Wedding Dress</h3>
-            <p>Luxury & tradition</p>
-            <div class="price">₹7,999</div>
-            <button onclick="addToCart()">Add to Cart</button>
-        </div>
-    </div>
-</div>
-</section>
+  <script>
+    // ==========================
+    // Single-file Inventory JS
+    // ==========================
 
-<div class="cart">
-🛒 Cart Items: <span id="cartCount">0</span>
-</div>
+    const DB_KEY = 'inv_items_v1';
 
-<footer>
-<p>© 2025 FashionHub</p>
-<p>Deployed using Jenkins, Docker & Kubernetes</p>
-</footer>
+    // DOM refs
+    const form = document.getElementById('itemForm');
+    const nameInput = document.getElementById('name');
+    const skuInput = document.getElementById('sku');
+    const vendorInput = document.getElementById('vendor');
+    const qtyInput = document.getElementById('qty');
+    const priceInput = document.getElementById('price');
+    const reorderInput = document.getElementById('reorder');
+    const descInput = document.getElementById('desc');
+    const imgInput = document.getElementById('imgInput');
+    const thumbPreview = document.getElementById('thumbPreview');
+    const saveBtn = document.getElementById('saveBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const editingId = document.getElementById('editingId');
 
-<script>
-let cart = 0;
+    const grid = document.getElementById('grid');
+    const emptyState = document.getElementById('emptyState');
+    const statCount = document.getElementById('statCount');
+    const statLow = document.getElementById('statLow');
+    const statValue = document.getElementById('statValue');
 
-function addToCart() {
-    cart++;
-    document.getElementById("cartCount").innerText = cart;
-}
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const tableToggle = document.getElementById('tableToggle');
+    const tableView = document.getElementById('tableView');
+    const tableBody = document.getElementById('tableBody');
+    const exportBtn = document.getElementById('exportBtn');
+    const importBtn = document.getElementById('importBtn');
+    const addSampleBtn = document.getElementById('addSampleBtn');
 
-function scrollToShop() {
-    document.getElementById("shop").scrollIntoView({ behavior: "smooth" });
-}
-</script>
+    // in-memory
+    let items = [];
+    let currentImageBase64 = null;
 
-</body>
-</html>
+    // Helpers
+    function uid(prefix='id'){
+      return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+    }
 
-<header>
-<nav>
-    <h1>FashionHub</h1>
-    <ul>
-        <li>Home</li>
-        <li>Shop</li>
-        <li>New Arrivals</li>
-        <li>Contact</li>
-    </ul>
-</nav>
-</header>
+    function saveToStorage(){
+      localStorage.setItem(DB_KEY, JSON.stringify(items));
+    }
+    function loadFromStorage(){
+      try{
+        const raw = localStorage.getItem(DB_KEY);
+        if(!raw) return [];
+        return JSON.parse(raw);
+      }catch(e){return []}
+    }
 
-<section class="hero">
-<div class="hero-content">
-    <h2>Style That Defines You</h2>
-    <p>Discover elegant dresses for every moment</p>
-    <button onclick="scrollToShop()">Shop Now</button>
-</div>
-</section>
+    function formatCurrency(n){
+      try{ return '₹' + Number(n).toLocaleString('en-IN', {maximumFractionDigits:2, minimumFractionDigits:2}) }catch(e){return '₹0'}
+    }
 
-<section id="shop">
-<h2 class="section-title">Trending Dresses</h2>
+    // UI
+    function render(){
+      grid.innerHTML = '';
+      tableBody.innerHTML = '';
 
-<div class="products">
-    <div class="product">
-        <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80">
-        <div class="product-info">
-            <h3>Floral Summer Dress</h3>
-            <p>Light & breezy fashion</p>
-            <div class="price">₹1,999</div>
-            <button onclick="addToCart()">Add to Cart</button>
-        </div>
-    </div>
+      const q = (searchInput.value || '').trim().toLowerCase();
+      let list = items.slice();
 
-    <div class="product">
-        <img src="https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&w=800&q=80">
-        <div class="product-info">
-            <h3>Evening Party Gown</h3>
-            <p>Elegant and classy</p>
-            <div class="price">₹3,499</div>
-            <button onclick="addToCart()">Add to Cart</button>
-        </div>
-    </div>
+      // filtering search
+      if(q){
+        list = list.filter(i => (i.name||'').toLowerCase().includes(q) || (i.vendor||'').toLowerCase().includes(q) || (i.sku||'').toLowerCase().includes(q));
+      }
 
-    <div class="product">
-        <img src="https://images.unsplash.com/photo-1591369822096-ffd140ec948f?auto=format&fit=crop&w=800&q=80">
-        <div class="product-info">
-            <h3>Office Wear Kurti</h3>
-            <p>Comfort meets professionalism</p>
-            <div class="price">₹1,599</div>
-            <button onclick="addToCart()">Add to Cart</button>
-        </div>
-    </div>
+      // sorting
+      const sort = sortSelect.value;
+      if(sort === 'name') list.sort((a,b)=> (a.name||'').localeCompare(b.name||''));
+      else if(sort === 'qty_desc') list.sort((a,b)=> (b.qty||0)-(a.qty||0));
+      else if(sort === 'qty_asc') list.sort((a,b)=> (a.qty||0)-(b.qty||0));
+      else list.sort((a,b)=> b.createdAt - a.createdAt);
 
-    <div class="product">
-        <img src="https://images.unsplash.com/photo-1520975922284-9fdfd6a62a21?auto=format&fit=crop&w=800&q=80">
-        <div class="product-info">
-            <h3>Designer Wedding Dress</h3>
-            <p>Luxury & tradition</p>
-            <div class="price">₹7,999</div>
-            <button onclick="addToCart()">Add to Cart</button>
-        </div>
-    </div>
-</div>
-</section>
+      if(list.length === 0){
+        emptyState.style.display = 'block';
+      } else {
+        emptyState.style.display = 'none';
+      }
 
-<div class="cart">
-🛒 Cart Items: <span id="cartCount">0</span>
-</div>
+      // render cards
+      list.forEach(item => {
+        const card = document.createElement('div'); card.className='product card-anim';
+        const imgSrc = item.image || defaultSVGData();
+        card.innerHTML = `
+          <div class="p-img"><img src="${imgSrc}" alt="${escapeHtml(item.name)}" loading="lazy"></div>
+          <div class="p-title"><h3 title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</h3><div class="p-meta">${escapeHtml(item.sku||'')}</div></div>
+          <div class="p-meta small">${escapeHtml(item.vendor||'—')}</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px">
+            <div>
+              <div style="font-weight:700">${formatCurrency(item.price||0)}</div>
+              <div class="p-meta small">Qty: ${item.qty||0}</div>
+            </div>
+            <div>
+              ${ (item.qty || 0) <= (item.reorder || 0) ? '<span class="badge low">Low</span>' : '<span class="badge ok">In stock</span>' }
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn ghost" data-action="edit" data-id="${item.id}">Edit</button>
+            <button class="btn danger" data-action="delete" data-id="${item.id}">Delete</button>
+          </div>
+        `;
+        grid.appendChild(card);
 
-<footer>
-<p>© 2025 FashionHub</p>
-<p>Deployed using Jenkins, Docker & Kubernetes</p>
-</footer>
+        // table row also
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="width:80px"><img src="${imgSrc}" style="width:56px;height:40px;object-fit:cover;border-radius:6px"></td>
+          <td>${escapeHtml(item.name)}</td>
+          <td>${escapeHtml(item.sku||'')}</td>
+          <td>${escapeHtml(item.vendor||'')}</td>
+          <td>${item.qty||0}</td>
+          <td>${formatCurrency(item.price||0)}</td>
+          <td>
+            <button class="btn ghost" data-action="edit" data-id="${item.id}">Edit</button>
+            <button class="btn danger" data-action="delete" data-id="${item.id}">Delete</button>
+          </td>`;
+        tableBody.appendChild(tr);
+      });
 
-<script>
-let cart = 0;
+      // attach card action listeners (event delegation would be fine too)
+      document.querySelectorAll('[data-action="edit"]').forEach(b=>b.addEventListener('click', ()=> startEdit(b.dataset.id)));
+      document.querySelectorAll('[data-action="delete"]').forEach(b=>b.addEventListener('click', ()=> removeItem(b.dataset.id)));
 
-function addToCart() {
-    cart++;
-    document.getElementById("cartCount").innerText = cart;
-}
+      updateStats();
+    }
 
-function scrollToShop() {
-    document.getElementById("shop").scrollIntoView({ behavior: "smooth" });
-}
-</script>
+    function updateStats(){
+      statCount.innerText = items.length;
+      const low = items.filter(i => (i.qty||0) <= (i.reorder||0)).length;
+      statLow.innerText = low;
+      const total = items.reduce((s,i)=> s + ((i.price||0) * (i.qty||0)), 0);
+      statValue.innerText = formatCurrency(total);
+    }
 
+    // safe escape
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    // default placeholder as tiny SVG data url
+    function defaultSVGData(){
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><rect width='100%' height='100%' fill='%230b1220'/><text x='50%' y='50%' fill='%238fa7c4' font-size='28' dominant-baseline='middle' text-anchor='middle'>No Image</text></svg>`;
+      return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+    }
+
+    // add item
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      const id = editingId.value || null;
+      const name = nameInput.value.trim();
+      if(!name){ alert('Name required'); return }
+      const obj = {
+        id: id || uid('p'),
+        name: name,
+        sku: skuInput.value.trim(),
+        vendor: vendorInput.value.trim(),
+        qty: Number(qtyInput.value) || 0,
+        price: Number(priceInput.value) || 0,
+        reorder: Number(reorderInput.value) || 0,
+        desc: descInput.value.trim(),
+        image: currentImageBase64 || null,
+        createdAt: id ? (items.find(i=>i.id===id)?.createdAt || Date.now()) : Date.now()
+      };
+
+      if(id){
+        // edit
+        items = items.map(i => i.id === id ? obj : i);
+        toast('Updated item');
+      } else {
+        // add
+        items.unshift(obj);
+        toast('Added item');
+      }
+      saveToStorage();
+      resetForm();
+      render();
+    });
+
+    // image upload
+    imgInput.addEventListener('change', function(){
+      const file = imgInput.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev){
+        currentImageBase64 = ev.target.result;
+        thumbPreview.innerHTML = `<img src="${currentImageBase64}" alt="preview">`;
+      }
+      reader.readAsDataURL(file);
+    });
+
+    // reset form
+    clearBtn.addEventListener('click', resetForm);
+    function resetForm(){
+      form.reset();
+      editingId.value = '';
+      currentImageBase64 = null;
+      thumbPreview.innerHTML = `<svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="3" width="20" height="14" rx="2" fill="rgba(255,255,255,0.02)" /><circle cx="8.5" cy="9.5" r="1.8" fill="rgba(255,255,255,0.06)" /><path d="M21 21H3" stroke="rgba(255,255,255,0.03)" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+      document.getElementById('formTitle').innerText = 'Add New Item';
+      saveBtn.innerText = 'Add Item';
+    }
+
+    // edit
+    function startEdit(id){
+      const it = items.find(i=>i.id===id); if(!it) return;
+      editingId.value = it.id;
+      nameInput.value = it.name || '';
+      skuInput.value = it.sku || '';
+      vendorInput.value = it.vendor || '';
+      qtyInput.value = it.qty || 0;
+      priceInput.value = it.price || 0;
+      reorderInput.value = it.reorder || 0;
+      descInput.value = it.desc || '';
+      currentImageBase64 = it.image || null;
+      thumbPreview.innerHTML = `<img src="${currentImageBase64 || defaultSVGData()}" alt="preview">`;
+      document.getElementById('formTitle').innerText = 'Edit Item';
+      saveBtn.innerText = 'Save Changes';
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    // remove
+    function removeItem(id){
+      if(!confirm('Delete this item?')) return;
+      items = items.filter(i=>i.id!==id);
+      saveToStorage();
+      render();
+      toast('Deleted');
+    }
+
+    // toast simple
+    function toast(msg){
+      const d = document.createElement('div');
+      d.innerText = msg; d.style.position='fixed'; d.style.right='18px'; d.style.bottom='20px'; d.style.padding='10px 12px'; d.style.borderRadius='8px'; d.style.background='linear-gradient(90deg,var(--accent), #06b6d4)'; d.style.color='#021017'; d.style.boxShadow='0 6px 22px rgba(2,6,23,0.4)'; d.style.zIndex=9999; d.style.fontWeight=700;
+      document.body.appendChild(d);
+      setTimeout(()=> d.style.opacity='0', 1600);
+      setTimeout(()=> d.remove(), 2000);
+    }
+
+    // search / sort handlers
+    searchInput.addEventListener('input', debounce(()=> render(), 220));
+    sortSelect.addEventListener('change', render);
+
+    // table toggle
+    let tableShown = false;
+    tableToggle.addEventListener('click', ()=>{
+      tableShown = !tableShown; tableView.style.display = tableShown ? 'block':'none'; tableToggle.innerText = tableShown ? 'Cards' : 'Table';
+    });
+
+    // export/import
+    exportBtn.addEventListener('click', ()=>{
+      const data = JSON.stringify(items, null, 2);
+      const blob = new Blob([data], {type:'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='inventory_export.json'; a.click();
+      toast('Exported');
+    });
+
+    importBtn.addEventListener('click', ()=>{
+      const inp = document.createElement('input'); inp.type='file'; inp.accept='application/json';
+      inp.onchange = (ev)=>{
+        const f = ev.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = e=>{
+          try{
+            const arr = JSON.parse(e.target.result);
+            if(!Array.isArray(arr)) throw new Error('Invalid');
+            items = arr.map(x => ({...x, createdAt: x.createdAt || Date.now()}));
+            saveToStorage(); render(); toast('Imported');
+          }catch(err){ alert('Invalid JSON file') }
+        }; r.readAsText(f);
+      };
+      inp.click();
+    });
+
+    // sample item
+    addSampleBtn.addEventListener('click', ()=>{
+      const sample = {
+        id: uid('p'), name: 'Portable Drill', sku:'DRL-001', vendor:'ToolsCo', qty:3, price:2499.00, reorder:2, desc:'Cordless drill with battery', image: defaultSVGData(), createdAt: Date.now()
+      };
+      items.unshift(sample); saveToStorage(); render();
+    });
+
+    // utilities
+    function debounce(fn, t){ let timer; return (...a)=>{ clearTimeout(timer); timer=setTimeout(()=>fn(...a), t); } }
+
+    // init
+    function init(){
+      items = loadFromStorage();
+      // if empty, create a tiny sample to demo
+      if(!items || items.length===0){
+        // do not auto-add by default, user can add
+      }
+      render();
+    }
+
+    init();
+
+  </script>
 </body>
 </html>
