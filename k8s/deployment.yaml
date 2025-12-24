@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: capstone-container
-        image: ganesamoorthir/capstone-website:9
+        image: ganesamoorthir/capstone-website:11
         ports:
         - containerPort: 80
 
