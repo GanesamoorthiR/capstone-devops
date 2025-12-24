@@ -1,8 +1,616 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title> Intellipaat </title>
+<meta charset="UTF-8">
+<title>FashionHub | Dress Shopping</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* ================= GLOBAL ================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: #f5f5f5;
+    color: #333;
+}
+
+/* ================= HEADER ================= */
+header {
+    background: linear-gradient(120deg, #ff416c, #ff4b2b);
+    padding: 20px 60px;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    animation: slideDown 1s ease;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-100px); }
+    to { transform: translateY(0); }
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav h1 {
+    font-size: 28px;
+    letter-spacing: 2px;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+}
+
+nav ul li {
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+nav ul li:hover {
+    transform: scale(1.1);
+}
+
+/* ================= HERO ================= */
+.hero {
+    height: 90vh;
+    background: url("https://images.unsplash.com/photo-1521335629791-ce4aec67dd47?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+}
+
+.hero-content {
+    position: relative;
+    text-align: center;
+    color: white;
+    animation: fadeIn 2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-content h2 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.hero-content p {
+    font-size: 20px;
+    margin-bottom: 30px;
+}
+
+.hero-content button {
+    padding: 15px 35px;
+    border: none;
+    background: #ff416c;
+    color: white;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.3s, background 0.3s;
+}
+
+.hero-content button:hover {
+    background: #e63950;
+    transform: scale(1.05);
+}
+
+/* ================= PRODUCTS ================= */
+section {
+    padding: 80px 60px;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 50px;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+}
+
+.product {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    transition: transform 0.4s;
+}
+
+.product:hover {
+    transform: translateY(-15px);
+}
+
+.product img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 20px;
+    text-align: center;
+}
+
+.product-info h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.product-info p {
+    color: #777;
+    margin-bottom: 15px;
+}
+
+.price {
+    font-size: 18px;
+    color: #ff416c;
+    margin-bottom: 15px;
+}
+
+.product-info button {
+    padding: 10px 25px;
+    border: none;
+    background: #ff416c;
+    color: white;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.product-info button:hover {
+    background: #e63950;
+}
+
+/* ================= CART ================= */
+.cart {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    background: #ff416c;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 40px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+/* ================= FOOTER ================= */
+footer {
+    background: #222;
+    color: #ccc;
+    text-align: center;
+    padding: 30px;
+}
+</style>
 </head>
-<body style = "background-image:url('images/github3.jpg'); background-size: 100%">
-<h2 ALIGN=CENTER>Hello world!</h2>
+
+<body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FashionHub | Dress Shopping</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* ================= GLOBAL ================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: #f5f5f5;
+    color: #333;
+}
+
+/* ================= HEADER ================= */
+header {
+    background: linear-gradient(120deg, #ff416c, #ff4b2b);
+    padding: 20px 60px;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    animation: slideDown 1s ease;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-100px); }
+    to { transform: translateY(0); }
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav h1 {
+    font-size: 28px;
+    letter-spacing: 2px;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+}
+
+nav ul li {
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+nav ul li:hover {
+    transform: scale(1.1);
+}
+
+/* ================= HERO ================= */
+.hero {
+    height: 90vh;
+    background: url("https://images.unsplash.com/photo-1521335629791-ce4aec67dd47?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+}
+
+.hero-content {
+    position: relative;
+    text-align: center;
+    color: white;
+    animation: fadeIn 2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-content h2 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.hero-content p {
+    font-size: 20px;
+    margin-bottom: 30px;
+}
+
+.hero-content button {
+    padding: 15px 35px;
+    border: none;
+    background: #ff416c;
+    color: white;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.3s, background 0.3s;
+}
+
+.hero-content button:hover {
+    background: #e63950;
+    transform: scale(1.05);
+}
+
+/* ================= PRODUCTS ================= */
+section {
+    padding: 80px 60px;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 50px;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+}
+
+.product {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    transition: transform 0.4s;
+}
+
+.product:hover {
+    transform: translateY(-15px);
+}
+
+.product img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 20px;
+    text-align: center;
+}
+
+.product-info h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.product-info p {
+    color: #777;
+    margin-bottom: 15px;
+}
+
+.price {
+    font-size: 18px;
+    color: #ff416c;
+    margin-bottom: 15px;
+}
+
+.product-info button {
+    padding: 10px 25px;
+    border: none;
+    background: #ff416c;
+    color: white;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.product-info button:hover {
+    background: #e63950;
+}
+
+/* ================= CART ================= */
+.cart {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    background: #ff416c;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 40px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+/* ================= FOOTER ================= */
+footer {
+    background: #222;
+    color: #ccc;
+    text-align: center;
+    padding: 30px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<nav>
+    <h1>FashionHub</h1>
+    <ul>
+        <li>Home</li>
+        <li>Shop</li>
+        <li>New Arrivals</li>
+        <li>Contact</li>
+    </ul>
+</nav>
+</header>
+
+<section class="hero">
+<div class="hero-content">
+    <h2>Style That Defines You</h2>
+    <p>Discover elegant dresses for every moment</p>
+    <button onclick="scrollToShop()">Shop Now</button>
+</div>
+</section>
+
+<section id="shop">
+<h2 class="section-title">Trending Dresses</h2>
+
+<div class="products">
+    <div class="product">
+        <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80">
+        <div class="product-info">
+            <h3>Floral Summer Dress</h3>
+            <p>Light & breezy fashion</p>
+            <div class="price">₹1,999</div>
+            <button onclick="addToCart()">Add to Cart</button>
+        </div>
+    </div>
+
+    <div class="product">
+        <img src="https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&w=800&q=80">
+        <div class="product-info">
+            <h3>Evening Party Gown</h3>
+            <p>Elegant and classy</p>
+            <div class="price">₹3,499</div>
+            <button onclick="addToCart()">Add to Cart</button>
+        </div>
+    </div>
+
+    <div class="product">
+        <img src="https://images.unsplash.com/photo-1591369822096-ffd140ec948f?auto=format&fit=crop&w=800&q=80">
+        <div class="product-info">
+            <h3>Office Wear Kurti</h3>
+            <p>Comfort meets professionalism</p>
+            <div class="price">₹1,599</div>
+            <button onclick="addToCart()">Add to Cart</button>
+        </div>
+    </div>
+
+    <div class="product">
+        <img src="https://images.unsplash.com/photo-1520975922284-9fdfd6a62a21?auto=format&fit=crop&w=800&q=80">
+        <div class="product-info">
+            <h3>Designer Wedding Dress</h3>
+            <p>Luxury & tradition</p>
+            <div class="price">₹7,999</div>
+            <button onclick="addToCart()">Add to Cart</button>
+        </div>
+    </div>
+</div>
+</section>
+
+<div class="cart">
+🛒 Cart Items: <span id="cartCount">0</span>
+</div>
+
+<footer>
+<p>© 2025 FashionHub</p>
+<p>Deployed using Jenkins, Docker & Kubernetes</p>
+</footer>
+
+<script>
+let cart = 0;
+
+function addToCart() {
+    cart++;
+    document.getElementById("cartCount").innerText = cart;
+}
+
+function scrollToShop() {
+    document.getElementById("shop").scrollIntoView({ behavior: "smooth" });
+}
+</script>
+
+</body>
+</html>
+
+<header>
+<nav>
+    <h1>FashionHub</h1>
+    <ul>
+        <li>Home</li>
+        <li>Shop</li>
+        <li>New Arrivals</li>
+        <li>Contact</li>
+    </ul>
+</nav>
+</header>
+
+<section class="hero">
+<div class="hero-content">
+    <h2>Style That Defines You</h2>
+    <p>Discover elegant dresses for every moment</p>
+    <button onclick="scrollToShop()">Shop Now</button>
+</div>
+</section>
+
+<section id="shop">
+<h2 class="section-title">Trending Dresses</h2>
+
+<div class="products">
+    <div class="product">
+        <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80">
+        <div class="product-info">
+            <h3>Floral Summer Dress</h3>
+            <p>Light & breezy fashion</p>
+            <div class="price">₹1,999</div>
+            <button onclick="addToCart()">Add to Cart</button>
+        </div>
+    </div>
+
+    <div class="product">
+        <img src="https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&w=800&q=80">
+        <div class="product-info">
+            <h3>Evening Party Gown</h3>
+            <p>Elegant and classy</p>
+            <div class="price">₹3,499</div>
+            <button onclick="addToCart()">Add to Cart</button>
+        </div>
+    </div>
+
+    <div class="product">
+        <img src="https://images.unsplash.com/photo-1591369822096-ffd140ec948f?auto=format&fit=crop&w=800&q=80">
+        <div class="product-info">
+            <h3>Office Wear Kurti</h3>
+            <p>Comfort meets professionalism</p>
+            <div class="price">₹1,599</div>
+            <button onclick="addToCart()">Add to Cart</button>
+        </div>
+    </div>
+
+    <div class="product">
+        <img src="https://images.unsplash.com/photo-1520975922284-9fdfd6a62a21?auto=format&fit=crop&w=800&q=80">
+        <div class="product-info">
+            <h3>Designer Wedding Dress</h3>
+            <p>Luxury & tradition</p>
+            <div class="price">₹7,999</div>
+            <button onclick="addToCart()">Add to Cart</button>
+        </div>
+    </div>
+</div>
+</section>
+
+<div class="cart">
+🛒 Cart Items: <span id="cartCount">0</span>
+</div>
+
+<footer>
+<p>© 2025 FashionHub</p>
+<p>Deployed using Jenkins, Docker & Kubernetes</p>
+</footer>
+
+<script>
+let cart = 0;
+
+function addToCart() {
+    cart++;
+    document.getElementById("cartCount").innerText = cart;
+}
+
+function scrollToShop() {
+    document.getElementById("shop").scrollIntoView({ behavior: "smooth" });
+}
+</script>
+
 </body>
 </html>
